@@ -5,16 +5,44 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+
+    public function logout() {
+        Auth::logout(); // log the user out
+        return redirect('/')->with(['success' => 'You are now logged out!']);
+    }
+
+    public function login(Request $request) {
+        $incomingFields = $request->validate([
+            'loginusername' => 'required',
+            'loginpassword' => 'required',
+        ]);
+
+        // Check if user exists
+        if(Auth::attempt(['username' => $incomingFields['loginusername'], 'password' => $incomingFields['loginpassword']])) {
+            // Store cookies
+            $request->session()->regenerate();
+
+            // Redirect back to homepage
+            return redirect('/')->with(['success' => 'You are now logged in!']);
+        } else {
+            return redirect('/')->with(['failure' => 'Invalid credentials']);
+        }
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //
-        return view('homepage');
+        if(Auth::check()) {
+            return view('homepage-feed');
+        } else {
+            return view('homepage');
+        }
     }
 
     /**
@@ -40,8 +68,11 @@ class UserController extends Controller
         $incomingFields['password'] = bcrypt($incomingFields['password']);
 
         // Store
-        User::create($incomingFields);
-        return 'Successful.';
+        $user = User::create($incomingFields);
+
+        // Login the user automatically after creating the account
+        Auth::login($user);
+        return redirect('/')->with(['success', 'You are now registered!']);
     }
 
     /**
