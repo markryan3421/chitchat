@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
+
+    public function viewSinglePost(Post $post) {
+        return view('single-post', ['post' => $post]);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -39,9 +44,9 @@ class PostController extends Controller
         $incomingFields['user_id'] = Auth::id();
 
         // Save to database
-        Post::create($incomingFields);
+        $newPost = Post::create($incomingFields);
 
-        return 'post created successfully';
+        return redirect("/post/{$newPost->id}")->with('success', 'Post successfuly created');
     }
 
     /**
