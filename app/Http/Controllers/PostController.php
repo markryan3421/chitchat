@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
 
     public function viewSinglePost(Post $post) {
         return view('single-post', ['post' => $post]);
@@ -79,6 +82,12 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $this->authorize('delete', $post); // Check if the user logged in is allowed to delete post
+        // if(Auth::user()->cannot('delete', $post)) {
+        //     return 'You are not allowed to do that.';
+        // }
+        $post->delete();
+
+        return redirect('/profile/' . Auth::user()->username)->with('success', 'Post successfully deleted.');
     }
 }

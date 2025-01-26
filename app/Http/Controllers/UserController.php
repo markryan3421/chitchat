@@ -78,9 +78,9 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function showProfile(User $user)
     {
-        //
+        return view('profile-posts', ['username' => $user->username, 'posts' => $user->posts()->latest()->get(), 'numOfPost' => $user->posts()->count()]);
     }
 
     /**
