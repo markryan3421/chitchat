@@ -12,6 +12,10 @@ class PostController extends Controller
 {
     use AuthorizesRequests;
 
+    public function showEditForm(Post $post) {
+        return view('edit-post', ['post' => $post]);
+    }
+
     public function viewSinglePost(Post $post) {
         return view('single-post', ['post' => $post]);
     }
@@ -74,7 +78,18 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $incomingFields = $request->validate([
+            'title' => 'required',
+            'body' => 'required',
+        ]);
+
+        // Strip out html attributes
+        $incomingFields['title'] = strip_tags($incomingFields['title']);
+        $incomingFields['body'] = strip_tags($incomingFields['body']);
+
+        $post->update($incomingFields);
+
+        return back()->with('success', 'Post successfully edited.');
     }
 
     /**
@@ -82,12 +97,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $this->authorize('delete', $post); // Check if the user logged in is allowed to delete post
-        // if(Auth::user()->cannot('delete', $post)) {
-        //     return 'You are not allowed to do that.';
-        // }
+        // $this->authorize('delete', $post); // Check if the user logged in is allowed to delete post
         $post->delete();
-
         return redirect('/profile/' . Auth::user()->username)->with('success', 'Post successfully deleted.');
     }
 }
