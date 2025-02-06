@@ -5,6 +5,9 @@
         <form class="ml-2 d-inline" action="#" method="POST">
           <button class="btn btn-primary btn-sm">Follow <i class="fas fa-user-plus"></i></button>
           <!-- <button class="btn btn-danger btn-sm">Stop Following <i class="fas fa-user-times"></i></button> -->
+            @if (Auth::user()->username == $username)
+                <a class="btn btn-secondary btn-sm" href="/manage-avatar">Manage Avatar</a>
+            @endif
         </form>
       </h2>
 
@@ -19,7 +22,7 @@
             <a href="/post/{{$post->id}}" class="list-group-item list-group-item-action">
             <img class="avatar-tiny" src="https://gravatar.com/avatar/b9408a09298632b5151200f3449434ef?s=128" />
             <strong>{{$post->title}}</strong> on {{$post->created_at->format('n/j/Y')}}
-            </a>    
+            </a>
         @endforeach
       </div>
     </div>
