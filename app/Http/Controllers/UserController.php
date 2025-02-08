@@ -16,18 +16,29 @@ class UserController extends Controller
         $request->validate([
             'avatar' => 'required|image|max:3000'
         ]);
-
+    
         $user = Auth::user();
         $filename = $user->id . '-' . uniqid() . '.jpg';
-
+    
         // Resize and save the image
         $img = Image::make($request->file('avatar'))->fit(120)->encode('jpg');
-
+    
         // Store the image in the 'public/avatars' folder
         Storage::disk('public')->put('avatars/' . $filename, $img);
-
-        return 'File successfully uploaded.';
+    
+        $oldAvatar = $user->avatar; // Get the old avatar from the database
+    
+        $user->avatar = $filename;
+        $user->save();
+    
+        // Corrected file deletion logic
+        if ($oldAvatar && $oldAvatar !== 'default-avatar.jpg') {
+            Storage::disk('public')->delete('avatars/' . basename($oldAvatar));
+        }
+    
+        return back()->with(['success' => 'Avatar successfully updated']);
     }
+    
 
     public function showAvatarForm() {
         return view('avatar-form');
@@ -104,7 +115,7 @@ class UserController extends Controller
      */
     public function showProfile(User $user)
     {
-        return view('profile-posts', ['username' => $user->username, 'posts' => $user->posts()->latest()->get(), 'numOfPost' => $user->posts()->count()]);
+        return view('profile-posts', ['avatar' => $user->avatar, 'username' => $user->username, 'posts' => $user->posts()->latest()->get(), 'numOfPost' => $user->posts()->count()]);
     }
 
     /**

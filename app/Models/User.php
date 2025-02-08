@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -24,6 +25,15 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+
+    public function getAvatarAttribute() {
+        return $this->attributes['avatar']
+            // If 'avatar' column is not null, display that avatar
+            ? asset('storage/avatars/' . $this->attributes['avatar'])
+
+            // Else, display the default avatar
+            : asset('/default-avatar.jpg');
+    }
 
     public function posts() {
         return $this->hasMany(Post::class);
