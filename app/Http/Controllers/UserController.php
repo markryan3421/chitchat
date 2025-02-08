@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -115,7 +116,14 @@ class UserController extends Controller
      */
     public function showProfile(User $user)
     {
-        return view('profile-posts', ['avatar' => $user->avatar, 'username' => $user->username, 'posts' => $user->posts()->latest()->get(), 'numOfPost' => $user->posts()->count()]);
+        // Set the default to false
+        $followed = 0;
+
+        if(Auth::check()) {
+            $followed = Follow::where([['user_id', '=', Auth::user()->id],['followeduser', '=', $user->id]])->count();
+        }
+
+        return view('profile-posts', ['followed' => $followed, 'avatar' => $user->avatar, 'username' => $user->username, 'posts' => $user->posts()->latest()->get(), 'numOfPost' => $user->posts()->count()]);
     }
 
     /**
