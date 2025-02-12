@@ -35,6 +35,14 @@ class User extends Authenticatable
             : asset('/default-avatar.jpg');
     }
 
+    public function followers() {
+        return $this->hasMany(Follow::class, 'followeduser'); // 'followeduser' is the foreign key or id of the 'users' table from the 'follow' table
+    }
+
+    public function followings() {
+        return $this->hasMany(Follow::class, 'user_id'); // 'user' is the id of the user being followed, (id sang gin-follow mo)
+    }
+
     public function posts() {
         return $this->hasMany(Post::class);
     }

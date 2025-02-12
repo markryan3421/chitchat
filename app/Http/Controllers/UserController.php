@@ -21,36 +21,36 @@ class UserController extends Controller
             $followed = Follow::where([['user_id', '=', Auth::user()->id],['followeduser', '=', $user->id]])->count();
         }
 
-        View::share('sharedData', ['followed' => $followed, 'avatar' => $user->avatar, 'username' => $user->username, 'numOfPost' => $user->posts()->count()]);
+        View::share('sharedData', ['followed' => $followed, 'avatar' => $user->avatar, 'username' => $user->username, 'numOfPost' => $user->posts()->count(), 'numOfFollowers' => $user->followers()->count(),  'numOfFollowings' => $user->followings()->count()]);
     }
 
     public function storeAvatar(Request $request) {
         $request->validate([
             'avatar' => 'required|image|max:3000'
         ]);
-    
+
         $user = Auth::user();
         $filename = $user->id . '-' . uniqid() . '.jpg';
-    
+
         // Resize and save the image
         $img = Image::make($request->file('avatar'))->fit(120)->encode('jpg');
-    
+
         // Store the image in the 'public/avatars' folder
         Storage::disk('public')->put('avatars/' . $filename, $img);
-    
+
         $oldAvatar = $user->avatar; // Get the old avatar from the database
-    
+
         $user->avatar = $filename;
         $user->save();
-    
+
         // Corrected file deletion logic
         if ($oldAvatar && $oldAvatar !== 'default-avatar.jpg') {
             Storage::disk('public')->delete('avatars/' . basename($oldAvatar));
         }
-    
+
         return back()->with(['success' => 'Avatar successfully updated']);
     }
-    
+
 
     public function showAvatarForm() {
         return view('avatar-form');
@@ -128,20 +128,20 @@ class UserController extends Controller
     public function showProfile(User $user)
     {
         $this->getSharedData($user);
-        return view('profile-posts', ['posts' => $user->posts()->latest()->get()]);
+        return view('profile-posts', ['posts' => $user->posts()->latest()->get()]); // 'posts()' method from User Model
     }
 
     public function showFollowers(User $user)
     {
         $this->getSharedData($user);
-        return view('profile-followers', ['posts' => $user->posts()->latest()->get()]);
+        return view('profile-followers', ['followers' => $user->followers()->latest()->get()]);
 
     }
 
     public function showFollowing(User $user)
     {
         $this->getSharedData($user);
-        return view('profile-following', ['posts' => $user->posts()->latest()->get()]);
+        return view('profile-following', ['followings' => $user->followings()->latest()->get()]);
 
     }
 
