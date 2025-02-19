@@ -35,6 +35,11 @@ class User extends Authenticatable
             : asset('/default-avatar.jpg');
     }
 
+    public function feedPosts() {
+        return $this->hasManyThrough(Post::class, Follow::class, 'user_id', 'user_id', 'id', 'followeduser'); //1st - what table to access, 2nd - the table with reference relationship to first argument(intermediate table), 3rd - FK of intermediate table, 4th - FK of first argument, 5th - PK of this model(user), 6th - PK of intermediate table
+    }
+
+
     public function followers() {
         return $this->hasMany(Follow::class, 'followeduser'); // 'followeduser' is the foreign key or id of the 'users' table from the 'follow' table
     }
