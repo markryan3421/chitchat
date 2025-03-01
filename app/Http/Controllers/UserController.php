@@ -22,6 +22,7 @@ class UserController extends Controller
         }
 
         View::share('sharedData', ['followed' => $followed, 'avatar' => $user->avatar, 'username' => $user->username, 'numOfPost' => $user->posts()->count(), 'numOfFollowers' => $user->followers()->count(),  'numOfFollowings' => $user->followings()->count()]);
+        // 'sharedData' variable will be the reference to be use in frontend to display dynamic values from database. this will be called inside the template tag
     }
 
     public function storeAvatar(Request $request) {

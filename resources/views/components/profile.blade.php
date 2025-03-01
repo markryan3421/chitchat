@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout :doctitle="$doctitle">  <!-- with colon(:) if passing only variables, without colon(): if passing static texts with variables -->
     <div class="container py-md-5 container--narrow">
       <h2>
         <img class="avatar-small" src="{{$sharedData['avatar']}}" /> {{$sharedData['username']}}
