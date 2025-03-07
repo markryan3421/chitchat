@@ -12,6 +12,12 @@ class PostController extends Controller
 {
     use AuthorizesRequests;
 
+    public function search($term) {
+        $posts = Post::search($term)->get();
+        $posts->load('user:id,username,avatar'); //load specific column from 'users' table
+        return $posts;
+    }
+
     public function showEditForm(Post $post) {
         return view('edit-post', ['post' => $post]);
     }

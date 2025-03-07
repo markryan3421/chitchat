@@ -12,6 +12,7 @@
         "php": "^8.2",
         "intervention/image": "2.7",
         "laravel/framework": "^11.31",
+        "laravel/scout": "^10.13",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {
