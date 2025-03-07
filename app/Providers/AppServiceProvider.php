@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\ExampleEvent;
+use App\Listeners\ExampleListener;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,5 +29,10 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Paginator::useBootstrapFive();
+
+        Event::listen(
+            ExampleEvent::class,
+            ExampleListener::class,
+        );
     }
 }

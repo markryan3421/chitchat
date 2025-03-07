@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Follow;
+use App\Events\ExampleEvent;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -59,6 +60,7 @@ class UserController extends Controller
 
 
     public function logout() {
+        event(new ExampleEvent(['username' => Auth::user()->username, 'action' => 'logged out']));
         Auth::logout(); // log the user out
         return redirect('/')->with(['success' => 'You are now logged out!']);
     }
@@ -73,6 +75,7 @@ class UserController extends Controller
         if(Auth::attempt(['username' => $incomingFields['loginusername'], 'password' => $incomingFields['loginpassword']])) {
             // Store cookies
             $request->session()->regenerate();
+            event(new ExampleEvent(['username' => Auth::user()->username, 'action' => 'logged in']));
 
             // Redirect back to homepage
             return redirect('/')->with(['success' => 'You are now logged in!']);
